@@ -1,3 +1,4 @@
+# storage.py
 import json
 
 def guardar_tareas(tareas, archivo="tareas.json"):
