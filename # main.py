@@ -20,7 +20,6 @@
 #   main() debe contener el bucle principal
 #   que permita al usuario interactuar hasta que elija salir.
 # =================================================
- # main.py
 # =================================================
 # Interacción con el usuario
 # =================================================
