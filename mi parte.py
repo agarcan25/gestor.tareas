@@ -10,7 +10,7 @@
 #     "completada": True/False
 # }
 #
-# Funciones que debes implementar:
+# Funciones que debes implementar:       #SIXSEVEN
 #   - crear_tarea(descripcion, prioridad)
 #   - añadir_tarea(tareas, descripcion, prioridad)
 #   - marcar_completada(tareas, indice)
@@ -71,3 +71,4 @@ def obtener_tareas_completadas(tareas):
     Debe devolver una lista de tareas cuyo campo 'completada' sea True.
     """
     return [tarea for tarea in tareas if tarea["completada"]]
+    
