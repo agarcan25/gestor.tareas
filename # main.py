@@ -1,44 +1,14 @@
-# main.py
-# =================================================
-# Este archivo se encarga de la interacción con el usuario.
-# Aquí NO se gestiona la lógica: eso se hace en models.py.
-# Tampoco se guarda/carga directamente: eso lo hace storage.py.
-#
-# Tareas principales:
-#   - Crear el menú
-#   - Leer opciones del usuario
-#   - Llamar a las funciones de models y storage
-#   - Mostrar las tareas por pantalla
-#
-# Funciones a implementar:
-#   - mostrar_menu()
-#   - pedir_entero(mensaje)
-#   - mostrar_lista(tareas)
-#   - main()
-#
-# IMPORTANTE:
-#   main() debe contener el bucle principal
-#   que permita al usuario interactuar hasta que elija salir.
-# =================================================
-# =================================================
-# Interacción con el usuario
-# =================================================
-
-from models import (
-    añadir_tarea,
+from storage_sqlite import (
+    insertar_tarea,
+    obtener_todas,
+    obtener_pendientes,
+    obtener_completadas,
     marcar_completada,
-    eliminar_tarea,
-    obtener_tareas_pendientes,
-    obtener_tareas_completadas
+    eliminar_tarea
 )
-
-from storage import guardar_tareas, cargar_tareas
 
 
 def mostrar_menu():
-    """
-    Muestra el menú principal con las opciones disponibles.
-    """
     print("\n=== GESTOR DE TAREAS ===")
     print("1. Añadir tarea")
     print("2. Marcar tarea como completada")
@@ -49,10 +19,6 @@ def mostrar_menu():
 
 
 def pedir_entero(mensaje):
-    """
-    Pide un número entero.
-    Repite hasta que sea válido.
-    """
     while True:
         try:
             return int(input(mensaje))
@@ -61,69 +27,58 @@ def pedir_entero(mensaje):
 
 
 def mostrar_lista(tareas):
-    """
-    Muestra por pantalla las tareas recibidas.
-    """
     if not tareas:
-        print("No hay tareas para mostrar.")
+        print("No hay tareas.")
         return
 
-    for i, tarea in enumerate(tareas):
-        estado = "hecho" if tarea.get("completada") else "no hecho"
-        print(f"{i}. [{estado}] {tarea.get('titulo')}")
+    for tarea in tareas:
+        estado = "✔" if tarea["completada"] else "✘"
+        print(f'ID {tarea["id"]} [{estado}] {tarea["descripcion"]} (Prioridad: {tarea["prioridad"]})')
 
 
 def main():
-    """
-    Bucle programa.
-    """
-    tareas = cargar_tareas()
-    if tareas is None:
-        tareas = []
 
     while True:
         mostrar_menu()
         opcion = pedir_entero("Elige una opción: ")
 
         if opcion == 1:
-            titulo = input("Introduce el título de la tarea: ")
-            añadir_tarea(tareas, titulo)
-            guardar_tareas(tareas)
-            print(" Tarea añadida correctamente.")
+            descripcion = input("Descripción: ")
+            prioridad = pedir_entero("Prioridad (1-5): ")
+            insertar_tarea(descripcion, prioridad)
+            print("Tarea añadida correctamente.")
 
         elif opcion == 2:
+            tareas = obtener_todas()
             mostrar_lista(tareas)
-            indice = pedir_entero("Índice de la tarea a completar: ")
-            marcar_completada(tareas, indice)
-            guardar_tareas(tareas)
+            id_tarea = pedir_entero("ID de la tarea a completar: ")
+            marcar_completada(id_tarea)
             print("Tarea marcada como completada.")
 
         elif opcion == 3:
+            tareas = obtener_todas()
             mostrar_lista(tareas)
-            indice = pedir_entero("Índice de la tarea a eliminar: ")
-            eliminar_tarea(tareas, indice)
-            guardar_tareas(tareas)
-            print(" Tarea eliminada.")
+            id_tarea = pedir_entero("ID de la tarea a eliminar: ")
+            eliminar_tarea(id_tarea)
+            print("Tarea eliminada.")
 
         elif opcion == 4:
             print("\n--- TAREAS PENDIENTES ---")
-            pendientes = obtener_tareas_pendientes(tareas)
-            mostrar_lista(pendientes)
+            tareas = obtener_pendientes()
+            mostrar_lista(tareas)
 
         elif opcion == 5:
             print("\n--- TAREAS COMPLETADAS ---")
-            completadas = obtener_tareas_completadas(tareas)
-            mostrar_lista(completadas)
+            tareas = obtener_completadas()
+            mostrar_lista(tareas)
 
         elif opcion == 0:
-            guardar_tareas(tareas)
-            print(" Saliendo del programa...")
+            print("Saliendo del programa...")
             break
 
         else:
-            print(" Opción no válida.")
+            print("Opción no válida.")
 
 
-# Ejecutar el programa solo si este archivo se ejecuta directamente
 if __name__ == "__main__":
-    main() 
+    main()
