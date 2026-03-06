@@ -1,5 +1,3 @@
-# storage_sqlite.py
-
 import sqlite3
 import os
 
@@ -14,7 +12,7 @@ def crear_bbdd():
         CREATE TABLE IF NOT EXISTS tareas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             descripcion TEXT NOT NULL,
-            prioridad INTEGER,
+            prioridad INTEGER NOT NULL,
             completada INTEGER DEFAULT 0
         )
     """)
@@ -33,10 +31,10 @@ def obtener_conexion():
 
 
 # ===============================
-# FUNCIONES CRUD
+# FUNCIONES
 # ===============================
 
-def insertar_tarea(descripcion, prioridad):
+def añadir_tarea(descripcion, prioridad):
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
@@ -53,7 +51,7 @@ def obtener_todas():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    cursor.execute("SELECT * FROM tareas")
+    cursor.execute("SELECT * FROM tareas ORDER BY prioridad DESC")
     tareas = cursor.fetchall()
 
     conexion.close()
@@ -64,7 +62,11 @@ def obtener_pendientes():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    cursor.execute("SELECT * FROM tareas WHERE completada = 0")
+    cursor.execute("""
+        SELECT * FROM tareas
+        WHERE completada = 0
+        ORDER BY prioridad DESC
+    """)
     tareas = cursor.fetchall()
 
     conexion.close()
@@ -75,7 +77,11 @@ def obtener_completadas():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
 
-    cursor.execute("SELECT * FROM tareas WHERE completada = 1")
+    cursor.execute("""
+        SELECT * FROM tareas
+        WHERE completada = 1
+        ORDER BY prioridad DESC
+    """)
     tareas = cursor.fetchall()
 
     conexion.close()

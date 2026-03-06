@@ -1,5 +1,5 @@
 from storage_sqlite import (
-    insertar_tarea,
+    añadir_tarea,
     obtener_todas,
     obtener_pendientes,
     obtener_completadas,
@@ -37,7 +37,7 @@ def mostrar_lista(tareas):
 
 
 def main():
-
+    
     while True:
         mostrar_menu()
         opcion = pedir_entero("Elige una opción: ")
@@ -45,7 +45,7 @@ def main():
         if opcion == 1:
             descripcion = input("Descripción: ")
             prioridad = pedir_entero("Prioridad (1-5): ")
-            insertar_tarea(descripcion, prioridad)
+            añadir_tarea(descripcion, prioridad)
             print("Tarea añadida correctamente.")
 
         elif opcion == 2:
