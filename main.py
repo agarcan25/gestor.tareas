@@ -66,7 +66,7 @@ def main():
         elif opcion == 4:
             print("\n--- TAREAS PENDIENTES ---")
             tareas = obtener_pendientes()
-            mostrar_lista(tareas)
+            mostrar_lista(sorted(tareas,key=lambda x:x["prioridad"], reverse=True))
 
         elif opcion == 5:
             print("\n--- TAREAS COMPLETADAS ---")
