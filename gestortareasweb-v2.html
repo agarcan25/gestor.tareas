@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor de Tareas</title>
+  <style>
+    /* ===== Reset básico ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ===== Variables de color (paleta suave) ===== */
+    :root {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --text: #2c3e50;
+      --muted: #7b8a9b;
+      --primary: #4a90e2;
+      --primary-dark: #357ab8;
+      --success: #4caf50;
+      --danger: #e74c3c;
+      --border: #e1e8ef;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --radius: 10px;
+    }
+
+    /* ===== Tipografía y fondo ===== */
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    /* ===== Layout principal ===== */
+    .container { max-width: 900px; margin: 0 auto; }
+
+    /* ===== Header ===== */
+    header {
+      text-align: center;
+      padding: 30px 20px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 25px;
+    }
+    header h1 { font-size: 2rem; color: var(--primary); margin-bottom: 8px; }
+    header p { color: var(--muted); font-size: 0.95rem; }
+
+    /* ===== Secciones ===== */
+    section {
+      background: var(--surface);
+      padding: 25px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 25px;
+    }
+    section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 15px;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    /* ===== Formulario añadir tarea ===== */
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    form input[type="text"] {
+      flex: 1 1 250px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+    }
+    form input[type="number"] {
+      width: 90px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+    }
+    form input:focus { outline: 2px solid var(--primary); }
+
+    /* ===== Botones ===== */
+    button {
+      cursor: pointer;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #3d8b40; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #c0392b; }
+
+    /* ===== Filtros ===== */
+    .filtros {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filtros button {
+      background: #e9eef4;
+      color: var(--text);
+    }
+    .filtros button.activo {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* ===== Lista de tareas ===== */
+    ul#lista-tareas { list-style: none; }
+    .tarea {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #fafbfc;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius);
+      transition: background 0.2s;
+    }
+    .tarea.completada {
+      background: #f0f8f1;
+      border-left-color: var(--success);
+      opacity: 0.85;
+    }
+    .tarea.completada .descripcion {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    .tarea .id {
+      font-weight: bold;
+      color: var(--muted);
+      min-width: 30px;
+    }
+    .tarea .descripcion { flex: 1 1 200px; }
+    .tarea .estado {
+      font-size: 0.8rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: #fff3cd;
+      color: #856404;
+    }
+    .tarea.completada .estado {
+      background: #d4edda;
+      color: #155724;
+    }
+    .tarea .acciones {
+      display: flex;
+      gap: 6px;
+    }
+    .tarea .acciones button {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+    }
+
+    /* ===== Etiquetas de prioridad por color ===== */
+    .prioridad {
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+    }
+    .p-1 { background: #4caf50; }
+    .p-2 { background: #8bc34a; }
+    .p-3 { background: #ffc107; color: #333; }
+    .p-4 { background: #ff9800; }
+    .p-5 { background: #e74c3c; }
+
+    /* ===== Sección explicativa ===== */
+    .explicacion h3 {
+      margin: 15px 0 8px;
+      color: var(--primary-dark);
+      font-size: 1.05rem;
+    }
+    .explicacion p, .explicacion li {
+      color: #4a5a6b;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+    .explicacion ul { padding-left: 20px; margin-bottom: 10px; }
+    .explicacion code {
+      background: #eef2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      color: #c0392b;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ===== Responsive móvil ===== */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .tarea { flex-direction: column; align-items: flex-start; }
+      .tarea .acciones { width: 100%; justify-content: flex-end; }
+      form { flex-direction: column; }
+      form input[type="number"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ===== Encabezado ===== -->
+    <header>
+      <h1>📋 Gestor de Tareas</h1>
+      <p>Simulación web del proyecto en Python con SQLite</p>
+    </header>
+
+    <!-- ===== Formulario para añadir tareas ===== -->
+    <section>
+      <h2>Añadir nueva tarea</h2>
+      <form id="form-tarea">
+        <input type="text" id="descripcion" placeholder="Descripción de la tarea..." required />
+        <input type="number" id="prioridad" min="1" max="5" value="3" title="Prioridad (1-5)" />
+        <button type="button" id="btn-anadir" class="btn-primary">Añadir tarea</button>
+      </form>
+    </section>
+
+    <!-- ===== Filtros ===== -->
+    <section>
+      <h2>Filtrar tareas</h2>
+      <div class="filtros">
+        <button data-filtro="todas" class="activo">Ver todas</button>
+        <button data-filtro="pendientes">Ver pendientes</button>
+        <button data-filtro="completadas">Ver completadas</button>
+      </div>
+    </section>
+
+    <!-- ===== Lista de tareas ===== -->
+    <section>
+      <h2>Lista de tareas</h2>
+      <ul id="lista-tareas"></ul>
+    </section>
+
+    <!-- ===== Sección explicativa para la exposición ===== -->
+    <section class="explicacion">
+      <h2>📖 Explicación del proyecto</h2>
+
+      <h3>1. Cómo se ha construido la web</h3>
+      <p>La web está hecha en un único archivo HTML que incluye dentro el CSS (estilos) y el JavaScript (interacción). No se conecta a ninguna base de datos: es una simulación visual del proyecto Python original que sí usa SQLite.</p>
+
+      <h3>2. Estructura HTML utilizada</h3>
+      <ul>
+        <li><code>&lt;header&gt;</code>: encabezado con el título y descripción.</li>
+        <li><code>&lt;main&gt;</code> / <code>&lt;section&gt;</code>: cada bloque (formulario, filtros, lista, explicación) está dentro de una <code>section</code>.</li>
+        <li><code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;button&gt;</code>: formulario para añadir tareas con descripción y prioridad.</li>
+        <li><code>&lt;ul&gt;</code> y <code>&lt;li&gt;</code>: lista donde se muestra cada tarea como un elemento.</li>
+        <li><code>&lt;footer&gt;</code>: pie de página con la información final.</li>
+      </ul>
+
+      <h3>3. Estilos CSS aplicados</h3>
+      <ul>
+        <li><strong>Paleta de colores suave</strong>: definida con variables CSS (<code>--primary</code>, <code>--success</code>, etc.).</li>
+        <li><strong>Tipografía</strong>: fuente del sistema, limpia y legible.</li>
+        <li><strong>Distribución</strong>: <code>flexbox</code> para alinear formulario, filtros y tareas.</li>
+        <li><strong>Bordes redondeados</strong> (<code>border-radius</code>) y <strong>sombras suaves</strong> (<code>box-shadow</code>) en tarjetas.</li>
+        <li><strong>Espaciado</strong> coherente con <code>padding</code> y <code>margin</code>.</li>
+        <li><strong>Diseño responsive</strong>: con <code>@media (max-width: 600px)</code> la interfaz se adapta a móvil.</li>
+        <li><strong>Estados visuales</strong>: tareas completadas en verde y tachadas; prioridades con colores (verde→rojo según urgencia).</li>
+      </ul>
+
+      <h3>4. Qué hace cada parte (equivalencia con Python + SQLite)</h3>
+      <ul>
+        <li><strong>Formulario "Añadir tarea"</strong>: en el proyecto real ejecutaría un <code>INSERT INTO tareas</code> en SQLite con descripción y prioridad.</li>
+        <li><strong>Filtro "Ver pendientes"</strong>: equivale a <code>SELECT * FROM tareas WHERE completada = 0</code>.</li>
+        <li><strong>Filtro "Ver completadas"</strong>: equivale a <code>SELECT * FROM tareas WHERE completada = 1</code>.</li>
+        <li><strong>Botón "Completar"</strong>: ejecutaría <code>UPDATE tareas SET completada = 1 WHERE id = ?</code>.</li>
+        <li><strong>Botón "Eliminar"</strong>: ejecutaría <code>DELETE FROM tareas WHERE id = ?</code>.</li>
+        <li><strong>Lista de tareas</strong>: representa los datos que en Python vendrían de una consulta <code>SELECT</code> a la tabla <code>tareas</code> (id, descripcion, prioridad, completada).</li>
+      </ul>
+
+      <h3>5. JavaScript usado</h3>
+      <p>Solo se usa JavaScript para simular la interacción en el navegador: añadir, completar, eliminar y filtrar tareas. Los datos se guardan en memoria (un array), no en una base de datos real.</p>
+    </section>
+
+    <footer>
+      Proyecto académico — Maqueta frontend del Gestor de Tareas en Python
+    </footer>
+  </div>
+
+  <script>
+    // ===== Datos de ejemplo (simulan la tabla SQLite) =====
+    let tareas = [
+      { id: 1, descripcion: "Estudiar para el examen de Python", prioridad: 5, completada: false },
+      { id: 2, descripcion: "Hacer la compra semanal", prioridad: 3, completada: false },
+      { id: 3, descripcion: "Entregar trabajo de programación", prioridad: 4, completada: true },
+      { id: 4, descripcion: "Llamar al médico", prioridad: 2, completada: false },
+      { id: 5, descripcion: "Limpiar el escritorio", prioridad: 1, completada: true },
+    ];
+
+    let siguienteId = 6;
+    let filtroActual = "todas";
+
+    const lista = document.getElementById("lista-tareas");
+    const form = document.getElementById("form-tarea");
+    const inputDesc = document.getElementById("descripcion");
+    const inputPri = document.getElementById("prioridad");
+    const btnAnadir = document.getElementById("btn-anadir");
+    const botonesFiltro = document.querySelectorAll(".filtros button");
+    const btnTodas = document.querySelector('.filtros button[data-filtro="todas"]');
+
+    // ===== Renderizar tareas según el filtro =====
+    function renderizar() {
+      lista.innerHTML = "";
+
+      let visibles = tareas;
+      if (filtroActual === "pendientes") visibles = tareas.filter(t => !t.completada);
+      if (filtroActual === "completadas") visibles = tareas.filter(t => t.completada);
+
+      if (visibles.length === 0) {
+        lista.innerHTML = '<li style="text-align:center;color:#7b8a9b;padding:20px;">No hay tareas para mostrar.</li>';
+        return;
+      }
+
+      visibles.forEach(t => {
+        const li = document.createElement("li");
+        li.className = "tarea" + (t.completada ? " completada" : "");
+        li.innerHTML = `
+          <span class="id">#${t.id}</span>
+          <span class="descripcion">${t.descripcion}</span>
+          <span class="prioridad p-${t.prioridad}">P${t.prioridad}</span>
+          <span class="estado">${t.completada ? "Completada" : "Pendiente"}</span>
+          <div class="acciones">
+            ${!t.completada ? `<button class="btn-success" data-accion="completar" data-id="${t.id}">✓ Completar</button>` : ""}
+            <button class="btn-danger" data-accion="eliminar" data-id="${t.id}">🗑 Eliminar</button>
+          </div>
+        `;
+        lista.appendChild(li);
+      });
+    }
+
+    // ===== Añadir tarea al hacer clic en el botón =====
+    function anadirTarea() {
+      const desc = inputDesc.value.trim();
+      let pri = parseInt(inputPri.value, 10);
+
+      if (!desc) {
+        inputDesc.focus();
+        return;
+      }
+
+      if (isNaN(pri) || pri < 1) pri = 1;
+      if (pri > 5) pri = 5;
+
+      tareas.push({
+        id: siguienteId++,
+        descripcion: desc,
+        prioridad: pri,
+        completada: false,
+      });
+
+      inputDesc.value = "";
+      inputPri.value = "3";
+      filtroActual = "todas";
+      botonesFiltro.forEach(boton => boton.classList.remove("activo"));
+      if (btnTodas) btnTodas.classList.add("activo");
+      renderizar();
+      inputDesc.focus();
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      anadirTarea();
+    });
+
+    btnAnadir.addEventListener("click", () => {
+      anadirTarea();
+    });
+
+    // ===== Delegación de eventos para Completar / Eliminar =====
+    lista.addEventListener("click", e => {
+      const btn = e.target.closest("button[data-accion]");
+      if (!btn) return;
+
+      const id = parseInt(btn.dataset.id, 10);
+      const accion = btn.dataset.accion;
+
+      if (accion === "completar") {
+        const tarea = tareas.find(t => t.id === id);
+        if (tarea) {
+          tarea.completada = true;
+          renderizar();
+        }
+      } else if (accion === "eliminar") {
+        tareas = tareas.filter(t => t.id !== id);
+        renderizar();
+      }
+    });
+
+    // ===== Filtros =====
+    botonesFiltro.forEach(btn => {
+      btn.addEventListener("click", () => {
+        botonesFiltro.forEach(b => b.classList.remove("activo"));
+        btn.classList.add("activo");
+        filtroActual = btn.dataset.filtro;
+        renderizar();
+      });
+    });
+
+    // ===== Render inicial =====
+    renderizar();
+  </script>
+</body>
+</html>
