@@ -34,7 +34,7 @@ def mostrar_lista(tareas):
 
     for tarea in tareas:
         estado = "✔" if tarea["completada"] else "✘"
-        print(f'ID {tarea["id"]} [{estado}] {tarea["descripcion"]} (Prioridad: {tarea["prioridad"]})')
+        print(f'ID {tarea["id"]} [{estado}] {tarea["descripcion"]} (Prioridad: {tarea["prioridad"]}) | Creada: {tarea["fecha_creacion"]}')
 
 
 def main():
