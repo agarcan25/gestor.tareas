@@ -8,29 +8,55 @@
     /* ===== Reset básico ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ===== Variables de color (paleta suave) ===== */
+    /* ===== Variables de color (paleta suave estilo Apple/Revolut) ===== */
     :root {
       --bg: #f5f7fa;
-      --surface: #fffdfd;
-      --text: #2c3e50;
+      --surface: #ffffff;
+      --text: #1d1d1f;
       --muted: #7b8a9b;
-      --primary: #4a90e2;
-      --primary-dark: #357ab8;
-      --success: #4caf50;
-      --danger: #e74c3c;
+      --primary: #0071e3;
+      --primary-dark: #0058b0;
+      --success: #34c759;
+      --danger: #ff3b30;
       --border: #e1e8ef;
-      --shadow: 0 2px 8px rgba(0,0,0,0.06);
-      --radius: 10px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-hover: 0 10px 30px rgba(0,0,0,0.10);
+      --radius: 14px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     /* ===== Tipografía y fondo ===== */
+    html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(0,113,227,0.08), transparent 40%),
+        radial-gradient(circle at 90% 100%, rgba(52,199,89,0.07), transparent 45%),
+        var(--bg);
+      background-attachment: fixed;
       color: var(--text);
       line-height: 1.5;
       padding: 20px;
+      -webkit-font-smoothing: antialiased;
     }
+
+    /* ===== Animaciones globales ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      0%   { opacity: 0; transform: scale(0.96) translateY(8px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes slideOut {
+      to { opacity: 0; transform: translateX(40px) scale(0.95); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .anim-in { animation: fadeUp 0.7s var(--ease) both; }
 
     /* ===== Layout principal ===== */
     .container { max-width: 900px; margin: 0 auto; }
@@ -38,22 +64,40 @@
     /* ===== Header ===== */
     header {
       text-align: center;
-      padding: 30px 20px;
-      background: var(--surface);
+      padding: 40px 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.5);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       margin-bottom: 25px;
     }
-    header h1 { font-size: 2rem; color: var(--primary); margin-bottom: 8px; }
+    header h1 {
+      font-size: 2.4rem;
+      background: linear-gradient(90deg, #0071e3, #34c759);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
     header p { color: var(--muted); font-size: 0.95rem; }
 
     /* ===== Secciones ===== */
     section {
-      background: var(--surface);
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.6);
       padding: 25px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       margin-bottom: 25px;
+      transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
+    }
+    section:hover {
+      box-shadow: var(--shadow-hover);
     }
     section h2 {
       font-size: 1.25rem;
@@ -61,6 +105,7 @@
       color: var(--text);
       border-bottom: 2px solid var(--border);
       padding-bottom: 8px;
+      letter-spacing: -0.01em;
     }
 
     /* ===== Formulario añadir tarea ===== */
@@ -71,36 +116,52 @@
     }
     form input[type="text"] {
       flex: 1 1 250px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-size: 1rem;
+      background: rgba(255,255,255,0.8);
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), transform 0.3s var(--ease);
     }
     form input[type="number"] {
       width: 90px;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-size: 1rem;
+      background: rgba(255,255,255,0.8);
+      transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
     }
-    form input:focus { outline: 2px solid var(--primary); }
+    form input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0,113,227,0.15);
+      transform: translateY(-1px);
+    }
 
     /* ===== Botones ===== */
     button {
       cursor: pointer;
       border: none;
-      padding: 10px 16px;
+      padding: 11px 18px;
       border-radius: var(--radius);
       font-size: 0.95rem;
-      transition: background 0.2s, transform 0.1s;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s var(--ease),
+                  transform 0.25s var(--ease),
+                  box-shadow 0.3s var(--ease);
     }
-    button:hover { transform: translateY(-1px); }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: #3d8b40; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #c0392b; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.10); }
+    button:active { transform: translateY(0) scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, #0071e3, #0058b0); color: white; }
+    .btn-primary:hover { background: linear-gradient(135deg, #008cff, #0066cc); }
+    .btn-success { background: linear-gradient(135deg, #34c759, #28a745); color: white; }
+    .btn-success:hover { background: linear-gradient(135deg, #3ddb66, #2ec04f); }
+    .btn-danger { background: linear-gradient(135deg, #ff3b30, #d92c22); color: white; }
+    .btn-danger:hover { background: linear-gradient(135deg, #ff5247, #e0342a); }
 
     /* ===== Filtros ===== */
     .filtros {
@@ -109,12 +170,14 @@
       flex-wrap: wrap;
     }
     .filtros button {
-      background: #e9eef4;
+      background: rgba(0,0,0,0.04);
       color: var(--text);
+      transition: all 0.35s var(--ease);
     }
     .filtros button.activo {
-      background: var(--primary);
+      background: linear-gradient(135deg, #0071e3, #0058b0);
       color: white;
+      box-shadow: 0 6px 16px rgba(0,113,227,0.30);
     }
 
     /* ===== Lista de tareas ===== */
@@ -124,35 +187,71 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 12px;
-      padding: 14px;
-      margin-bottom: 10px;
-      background: #fafbfc;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.85);
       border: 1px solid var(--border);
       border-left: 4px solid var(--primary);
       border-radius: var(--radius);
-      transition: background 0.2s;
+      animation: popIn 0.5s var(--ease) both;
+      transition: transform 0.4s var(--ease),
+                  box-shadow 0.4s var(--ease),
+                  background 0.3s var(--ease),
+                  border-color 0.3s var(--ease);
+      will-change: transform;
+    }
+    .tarea:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      background: #ffffff;
+    }
+    .tarea.eliminando {
+      animation: slideOut 0.35s var(--ease) forwards;
     }
     .tarea.completada {
-      background: #f0f8f1;
+      background: rgba(52,199,89,0.08);
       border-left-color: var(--success);
-      opacity: 0.85;
+      opacity: 0.92;
     }
     .tarea.completada .descripcion {
       text-decoration: line-through;
       color: var(--muted);
+      transition: color 0.4s var(--ease);
     }
     .tarea .id {
-      font-weight: bold;
+      font-weight: 600;
       color: var(--muted);
       min-width: 30px;
+      font-variant-numeric: tabular-nums;
     }
-    .tarea .descripcion { flex: 1 1 200px; }
-    .tarea .estado {
+    .tarea .descripcion {
+      flex: 1 1 200px;
+      transition: color 0.4s var(--ease);
+    }
+    .tarea .fecha {
       font-size: 0.8rem;
-      padding: 3px 8px;
+      color: #4a5a6b;
+      background: rgba(0,113,227,0.08);
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tarea .fecha strong {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .tarea .estado {
+      font-size: 0.78rem;
+      padding: 4px 10px;
       border-radius: 12px;
       background: #fff3cd;
       color: #856404;
+      transition: background 0.4s var(--ease), color 0.4s var(--ease);
     }
     .tarea.completada .estado {
       background: #d4edda;
@@ -163,23 +262,25 @@
       gap: 6px;
     }
     .tarea .acciones button {
-      padding: 6px 10px;
+      padding: 7px 12px;
       font-size: 0.85rem;
     }
 
     /* ===== Etiquetas de prioridad por color ===== */
     .prioridad {
-      font-size: 0.8rem;
-      padding: 3px 10px;
+      font-size: 0.78rem;
+      padding: 4px 11px;
       border-radius: 12px;
       color: white;
       font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
-    .p-1 { background: #4caf50; }
-    .p-2 { background: #8bc34a; }
-    .p-3 { background: #ffc107; color: #333; }
-    .p-4 { background: #ff9800; }
-    .p-5 { background: #e74c3c; }
+    .p-1 { background: linear-gradient(135deg, #34c759, #28a745); }
+    .p-2 { background: linear-gradient(135deg, #8bc34a, #689f38); }
+    .p-3 { background: linear-gradient(135deg, #ffc107, #ff9800); color: #3a2a00; }
+    .p-4 { background: linear-gradient(135deg, #ff9800, #ff6f00); }
+    .p-5 { background: linear-gradient(135deg, #ff3b30, #d92c22); }
 
     /* ===== Sección explicativa ===== */
     .explicacion h3 {
@@ -223,13 +324,13 @@
   <div class="container">
 
     <!-- ===== Encabezado ===== -->
-    <header>
-      <h1>📋 Gestor de Tareas</h1>
+    <header class="anim-in" style="animation-delay:0s">
+      <h1>Gestor de Tareas</h1>
       <p>Simulación web del proyecto en Python con SQLite</p>
     </header>
 
     <!-- ===== Formulario para añadir tareas ===== -->
-    <section>
+    <section class="anim-in" style="animation-delay:0.08s">
       <h2>Añadir nueva tarea</h2>
       <form id="form-tarea">
         <input type="text" id="descripcion" placeholder="Descripción de la tarea..." required />
@@ -239,7 +340,7 @@
     </section>
 
     <!-- ===== Filtros ===== -->
-    <section>
+    <section class="anim-in" style="animation-delay:0.16s">
       <h2>Filtrar tareas</h2>
       <div class="filtros">
         <button data-filtro="todas" class="activo">Ver todas</button>
@@ -249,7 +350,7 @@
     </section>
 
     <!-- ===== Lista de tareas ===== -->
-    <section>
+    <section class="anim-in" style="animation-delay:0.24s">
       <h2>Lista de tareas</h2>
       <ul id="lista-tareas"></ul>
     </section>
@@ -302,12 +403,14 @@
 
   <script>
     // ===== Datos de ejemplo (simulan la tabla SQLite) =====
+    // Fechas de ejemplo (más antiguo primero)
+    const ahora = Date.now();
     let tareas = [
-      { id: 1, descripcion: "Estudiar para el examen de Python", prioridad: 5, completada: false },
-      { id: 2, descripcion: "Hacer la compra semanal", prioridad: 3, completada: false },
-      { id: 3, descripcion: "Entregar trabajo de programación", prioridad: 4, completada: true },
-      { id: 4, descripcion: "Llamar al médico", prioridad: 2, completada: false },
-      { id: 5, descripcion: "Limpiar el escritorio", prioridad: 1, completada: true },
+      { id: 1, descripcion: "Estudiar para el examen de Python", prioridad: 5, completada: false, creadoEn: ahora - 5 * 86400000 },
+      { id: 2, descripcion: "Hacer la compra semanal", prioridad: 3, completada: false, creadoEn: ahora - 4 * 86400000 },
+      { id: 3, descripcion: "Entregar trabajo de programación", prioridad: 4, completada: true, creadoEn: ahora - 3 * 86400000 },
+      { id: 4, descripcion: "Llamar al médico", prioridad: 2, completada: false, creadoEn: ahora - 2 * 86400000 },
+      { id: 5, descripcion: "Limpiar el escritorio", prioridad: 1, completada: true, creadoEn: ahora - 1 * 86400000 },
     ];
 
     let siguienteId = 6;
@@ -321,6 +424,17 @@
     const botonesFiltro = document.querySelectorAll(".filtros button");
     const btnTodas = document.querySelector('.filtros button[data-filtro="todas"]');
 
+    // ===== Formateador de fechas en zona horaria de Madrid (Europe/Madrid) =====
+    const formatoFechaMadrid = new Intl.DateTimeFormat("es-ES", {
+      timeZone: "Europe/Madrid",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const formatearFechaMadrid = ts => formatoFechaMadrid.format(new Date(ts));
+
     // ===== Renderizar tareas según el filtro =====
     function renderizar() {
       lista.innerHTML = "";
@@ -329,19 +443,29 @@
       if (filtroActual === "pendientes") visibles = tareas.filter(t => !t.completada);
       if (filtroActual === "completadas") visibles = tareas.filter(t => t.completada);
 
+      // Ordenar: 1º por prioridad (mayor a menor), 2º por fecha de creación
+      // (más antigua primero, comparando timestamps UTC -> equivalente a hora Madrid).
+      visibles = [...visibles].sort((a, b) => {
+        if (b.prioridad !== a.prioridad) return b.prioridad - a.prioridad;
+        return a.creadoEn - b.creadoEn;
+      });
+
       if (visibles.length === 0) {
-        lista.innerHTML = '<li style="text-align:center;color:#7b8a9b;padding:20px;">No hay tareas para mostrar.</li>';
+        lista.innerHTML = '<li style="text-align:center;color:#7b8a9b;padding:24px;animation:fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;">No hay tareas para mostrar.</li>';
         return;
       }
 
-      visibles.forEach(t => {
+      visibles.forEach((t, i) => {
         const li = document.createElement("li");
         li.className = "tarea" + (t.completada ? " completada" : "");
+        li.style.animationDelay = (i * 0.05) + "s";
+        li.dataset.id = t.id;
         li.innerHTML = `
           <span class="id">#${t.id}</span>
           <span class="descripcion">${t.descripcion}</span>
           <span class="prioridad p-${t.prioridad}">P${t.prioridad}</span>
           <span class="estado">${t.completada ? "Completada" : "Pendiente"}</span>
+          <span class="fecha" title="Fecha de creación (zona horaria de Madrid)">🕒 Creada: <strong>${formatearFechaMadrid(t.creadoEn)}</strong></span>
           <div class="acciones">
             ${!t.completada ? `<button class="btn-success" data-accion="completar" data-id="${t.id}">✓ Completar</button>` : ""}
             <button class="btn-danger" data-accion="eliminar" data-id="${t.id}">🗑 Eliminar</button>
@@ -369,6 +493,7 @@
         descripcion: desc,
         prioridad: pri,
         completada: false,
+        creadoEn: Date.now(),
       });
 
       inputDesc.value = "";
@@ -404,8 +529,18 @@
           renderizar();
         }
       } else if (accion === "eliminar") {
-        tareas = tareas.filter(t => t.id !== id);
-        renderizar();
+        // Animación de salida antes de eliminar del array
+        const li = btn.closest("li.tarea");
+        if (li) {
+          li.classList.add("eliminando");
+          li.addEventListener("animationend", () => {
+            tareas = tareas.filter(t => t.id !== id);
+            renderizar();
+          }, { once: true });
+        } else {
+          tareas = tareas.filter(t => t.id !== id);
+          renderizar();
+        }
       }
     });
 
