@@ -13,7 +13,8 @@ def crear_bbdd():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             descripcion TEXT NOT NULL,
             prioridad INTEGER NOT NULL,
-            completada INTEGER DEFAULT 0
+            completada INTEGER DEFAULT 0,
+            fecha_creacion TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
